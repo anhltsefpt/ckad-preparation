@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: busybox
+  name: busybox
+spec:
+  volumes:
+    - name: 'task-pv-storage'
+      persistentVolumeClaim:
+        claimName: 'task-pv-claim'
+  containers:
+  - image: busybox
+    name: busybox
+    resources:
+      requests:
+        cpu: "1"
+        memory: "2Gi"
+      limits:
+        cpu: "1"
+        memory: "3Gi"
+    env:
+      - name: "PORT"
+        value: "12332"
+      - name: "configMap"
+        valueFrom:
+          configMapKeyRef:
+            name: configmap-demo
+            key: DB_Host
+      - name: "secret-demo"
+        valueFrom:
+          secretKeyRef:
+            key:  DB_Host
+            name: secret-demo
+    volumeMounts:
+      - mountPath: '/'
+        name: 'task-pv-storage'
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
